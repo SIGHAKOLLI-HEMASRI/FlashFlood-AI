@@ -1,12 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib
 import os
 
-app = Flask(__name__)
-CORS(app)
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
+
+app = Flask(
+    __name__,
+    static_folder=FRONTEND_DIR,
+    static_url_path=""
+)
+
+CORS(app)
 
 MODEL_PATH = os.path.join(
     BASE_DIR,
@@ -28,6 +34,7 @@ FEATURES = [
     "historical_risk"
 ]
 
+
 def get_risk_level(score):
     if score <= 30:
         return "LOW"
@@ -37,6 +44,7 @@ def get_risk_level(score):
         return "HIGH"
     else:
         return "CRITICAL"
+
 
 def get_warning_time(level):
     if level == "LOW":
@@ -48,6 +56,7 @@ def get_warning_time(level):
     else:
         return "10–30 minutes"
 
+
 def get_action(level):
     if level == "LOW":
         return "Continue monitoring conditions."
@@ -58,12 +67,11 @@ def get_action(level):
     else:
         return "Issue emergency warning and begin evacuation procedures."
 
+
 @app.route("/")
 def home():
-    return jsonify({
-        "system": "FlashGuard AI",
-        "status": "online"
-    })
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
 
 @app.route("/health")
 def health():
@@ -72,9 +80,9 @@ def health():
         "model": "loaded"
     })
 
+
 @app.route("/predict", methods=["POST"])
 def predict():
-
     data = request.get_json()
 
     try:
@@ -86,7 +94,10 @@ def predict():
 
     prediction = model.predict([values])[0]
 
-    score = round(max(0, min(100, float(prediction))), 1)
+    score = round(
+        max(0, min(100, float(prediction))),
+        1
+    )
 
     level = get_risk_level(score)
 
@@ -96,6 +107,7 @@ def predict():
         "warning_time": get_warning_time(level),
         "action": get_action(level)
     })
+
 
 if __name__ == "__main__":
     app.run(
