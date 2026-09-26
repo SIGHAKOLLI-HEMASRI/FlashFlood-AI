@@ -1,0 +1,10 @@
+{
+    "rainfall_1h": 60,
+    "rainfall_3h": 130,
+    "rainfall_24h": 170,
+    "forecast_rainfall": 50,
+    "soil_moisture": 75,
+    "slope": 34,
+    "elevation": 1400,
+    "historical_risk": 65
+}

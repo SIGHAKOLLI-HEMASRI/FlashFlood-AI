@@ -1,0 +1,508 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #06101c;
+    color: #eef6ff;
+    min-height: 100vh;
+}
+
+.app {
+    width: 100%;
+    min-height: 100vh;
+}
+
+
+/* ================= TOPBAR ================= */
+
+.topbar {
+    width: 100%;
+    height: 78px;
+    background: #091827;
+    border-bottom: 1px solid #1c3047;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 38px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #102a40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.brand h1 {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.brand span {
+    display: block;
+    margin-top: 4px;
+    color: #71869e;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #8fa5bd;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #37d68a;
+    border-radius: 50%;
+}
+
+/* ================= NAVIGATION ================= */
+
+.navigation {
+    height: 58px;
+    background: #081522;
+    border-bottom: 1px solid #1c3047;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 38px;
+    white-space: nowrap;
+}
+
+.navigation button {
+    background: transparent;
+    border: none;
+    color: #8fa5bd;
+    padding: 11px 17px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation button:hover {
+    background: #102238;
+    color: #eef6ff;
+}
+
+.navigation button.active {
+    background: #102238;
+    color: #eef6ff;
+}
+
+
+
+/* ================= MAIN ================= */
+
+.page {
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 38px;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h2 {
+    font-size: 30px;
+    margin: 8px 0;
+}
+
+.page-header p {
+    color: #8fa5bd;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.panel-label {
+    display: block;
+    color: #5f8aa9;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+
+/* ================= PANELS ================= */
+
+.panel {
+    background: #0b1827;
+    border: 1px solid #1c3047;
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.panel h3 {
+    font-size: 18px;
+    margin-top: 9px;
+    margin-bottom: 12px;
+}
+
+.panel p {
+    color: #8fa5bd;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* ================= STATS ================= */
+
+.stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    min-height: 125px;
+    margin-bottom: 0;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 28px;
+    margin-top: 18px;
+    margin-bottom: 5px;
+}
+
+.stat-card > span:last-child {
+    color: #71869e;
+    font-size: 12px;
+}
+
+
+/* ================= BUTTON ================= */
+
+.primary-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 9px;
+    background: #12658a;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background: #1682ad;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+.dashboard-message {
+    margin-top: 20px;
+}
+
+.dashboard-message p {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+
+/* ================= PREDICTION ================= */
+
+.prediction-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.input-panel,
+.result-panel {
+    min-height: 500px;
+}
+
+.input-panel label {
+    display: block;
+    margin-top: 20px;
+}
+
+select {
+    outline: none;
+    cursor: pointer;
+}
+
+.prediction-score {
+    margin: 42px 0 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.prediction-score strong {
+    font-size: 72px;
+    line-height: 1;
+}
+
+.prediction-score span {
+    color: #71869e;
+    font-size: 18px;
+}
+
+#predictionLevel {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+#predictionAction {
+    margin-bottom: 25px;
+}
+
+.prediction-info {
+    background: #101f33;
+    border: 1px solid #1d3047;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.prediction-info > span {
+    display: block;
+    color: #71869e;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 7px;
+}
+
+.prediction-info strong {
+    font-size: 15px;
+}
+
+
+/* ================= RISK MAP ================= */
+
+.map-panel {
+    min-height: 430px;
+}
+
+.map-placeholder {
+    height: 380px;
+    border-radius: 12px;
+    background:
+        radial-gradient(circle at 25% 30%, #153b51 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 65%, #153b51 0 2px, transparent 3px),
+        linear-gradient(135deg, #0b2030, #071521);
+    position: relative;
+    overflow: hidden;
+}
+
+.map-marker {
+    position: absolute;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid #38536b;
+    background: #0d2234;
+}
+
+.map-marker.critical {
+    left: 30%;
+    top: 25%;
+}
+
+.map-marker.high {
+    left: 62%;
+    top: 42%;
+}
+
+.map-marker.moderate {
+    left: 46%;
+    top: 62%;
+}
+
+.map-marker.low {
+    left: 20%;
+    top: 70%;
+}
+
+
+/* ================= TREND ================= */
+
+.trend-panel {
+    margin-top: 22px;
+}
+
+.trend-chart {
+    height: 180px;
+    position: relative;
+    margin-top: 25px;
+    border-left: 1px solid #29405a;
+    border-bottom: 1px solid #29405a;
+    overflow: hidden;
+}
+
+.trend-line {
+    position: absolute;
+    left: 3%;
+    right: 3%;
+    bottom: 20px;
+    height: 100px;
+}
+
+.trend-line svg {
+    width: 100%;
+    height: 100%;
+}
+
+.trend-line polyline {
+    fill: none;
+    stroke: #35d0ff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.trend-point {
+    fill: #35d0ff;
+}
+
+.trend-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: #71869e;
+    font-size: 11px;
+}
+
+
+/* ================= FACTORS ================= */
+
+.factor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.factor-card {
+    padding: 18px;
+    background: #101f33;
+    border: 1px solid #1d3047;
+    border-radius: 10px;
+}
+
+.factor-card span {
+    display: block;
+    color: #71869e;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .7px;
+    margin-bottom: 9px;
+}
+
+.factor-card strong {
+    color: #eef6ff;
+    font-size: 15px;
+}
+
+
+/* ================= ALERTS ================= */
+
+#alertsPage .stat-card strong {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+
+/* ================= NOTE ================= */
+
+.system-note {
+    margin: 20px 0;
+    padding: 16px;
+    background: #0b1827;
+    border-left: 3px solid #35d0ff;
+    color: #8fa5bd;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 900px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prediction-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .factor-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .topbar {
+        padding: 0 18px;
+    }
+
+    .system-status {
+        display: none;
+    }
+
+    .navigation {
+        padding: 0 12px;
+        overflow-x: auto;
+    }
+
+    .page {
+        padding: 22px 16px;
+    }
+
+    .page-header h2 {
+        font-size: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .factor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand h1 {
+        font-size: 18px;
+    }
+}

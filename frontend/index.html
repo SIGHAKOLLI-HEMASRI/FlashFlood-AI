@@ -1,0 +1,3086 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>FlashFlood AI</title>
+
+<!-- LEAFLET -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #0b1117;
+    color: #e7eef4;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    height: 70px;
+    padding: 0 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #101820;
+    border-bottom: 1px solid #24313d;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 900;
+    color: white;
+}
+
+.logo span {
+    color: #58c9b3;
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+}
+
+nav button {
+    background: transparent;
+    border: none;
+    color: #8293a1;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+nav button.active,
+nav button:hover {
+    color: #58c9b3;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #00e676;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00e676;
+}
+
+main {
+    padding: 28px;
+    max-width: 1450px;
+    margin: auto;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.card {
+    background: #101820;
+    border: 1px solid #24313d;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+}
+
+.hero-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 250px;
+}
+
+.small-label,
+.section-title,
+.metric-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #718494;
+}
+
+.location {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.risk-row {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.risk-level {
+    font-size: 30px;
+    font-weight: 900;
+    color: #ff6d00;
+}
+
+.risk-score {
+    font-size: 45px;
+    font-weight: 900;
+}
+
+.risk-score span {
+    font-size: 14px;
+    color: #718494;
+}
+
+.risk-description {
+    color: #899aa8;
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.warning {
+    margin-top: 25px;
+    padding: 14px;
+    background: #151f28;
+    border-radius: 10px;
+}
+
+.warning span {
+    display: block;
+    color: #718494;
+    font-size: 8px;
+}
+
+.warning strong {
+    display: block;
+    margin-top: 5px;
+    color: #58c9b3;
+}
+
+select {
+    width: 100%;
+    padding: 13px;
+    background: #0b1117;
+    color: white;
+    border: 1px solid #34434f;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.analyze-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #58c9b3;
+    color: #07100f;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.analyze-btn:hover {
+    opacity: .85;
+}
+
+.environment {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.metric {
+    background: #101820;
+    border: 1px solid #24313d;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.metric-value {
+    font-size: 25px;
+    font-weight: 900;
+    margin-top: 10px;
+}
+
+.metric-unit {
+    color: #718494;
+    font-size: 9px;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.section-title {
+    margin-bottom: 15px;
+}
+
+.reason {
+    padding: 12px;
+    background: #151f28;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    color: #aab8c4;
+}
+
+.alert {
+    display: none;
+    padding: 22px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #251812;
+    border: 1px solid #ff6d00;
+}
+
+.alert.moderate {
+    border-color: #ffd600;
+    background: #211f12;
+}
+
+.alert.high {
+    border-color: #ff6d00;
+    background: #251812;
+}
+
+.alert.critical {
+    border-color: #ff1744;
+    background: #281116;
+}
+
+.alert-top {
+    display: flex;
+    gap: 18px;
+}
+
+.alert-icon {
+    font-size: 32px;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.alert h2 {
+    margin: 7px 0;
+}
+
+.alert-location {
+    color: #899aa8;
+    font-size: 11px;
+}
+
+.alert-stats {
+    display: flex;
+    gap: 35px;
+    margin-top: 15px;
+}
+
+.alert-stats span {
+    display: block;
+    font-size: 8px;
+    color: #718494;
+}
+
+.alert-stats strong {
+    display: block;
+    margin-top: 5px;
+}
+
+.alert-reason {
+    margin-top: 15px;
+    font-size: 10px;
+    color: #aab8c4;
+}
+
+.alert-action {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(255,255,255,.04);
+    border-radius: 8px;
+}
+
+.alert-action-title {
+    font-size: 8px;
+    font-weight: bold;
+    color: #718494;
+}
+
+.alert-action p {
+    font-size: 10px;
+    margin-bottom: 0;
+}
+
+.sound {
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #1b2933;
+    font-size: 9px;
+    height: fit-content;
+}
+
+#miniMap,
+#riskMap {
+    width: 100%;
+    height: 430px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#miniMap {
+    height: 280px;
+}
+
+.leaflet-popup-content {
+    color: #111;
+}
+
+.history {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history th,
+.history td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #24313d;
+    font-size: 10px;
+}
+
+.history th {
+    color: #718494;
+}
+
+.architecture {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.arch-box {
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    background: #151f28;
+    border: 1px solid #24313d;
+}
+
+.arch-box strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+}
+
+.arch-box span {
+    color: #718494;
+    font-size: 9px;
+}
+
+@media(max-width:900px) {
+
+    nav {
+        display: none;
+    }
+
+    .hero,
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .environment {
+        grid-template-columns: repeat(3,1fr);
+    }
+
+    .architecture {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:600px) {
+
+    main {
+        padding: 15px;
+    }
+
+    header {
+        padding: 0 15px;
+    }
+
+    .environment {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        Flash<span>Flood</span> AI
+    </div>
+
+    <nav>
+
+        <button
+            class="active"
+            onclick="showPage('dashboard',this)">
+            Dashboard
+        </button>
+
+        <button
+            onclick="showPage('map',this)">
+            Risk Map
+        </button>
+
+        <button
+            onclick="showPage('history',this)">
+            Risk History
+        </button>
+
+        <button
+            onclick="showPage('system',this)">
+            System
+        </button>
+
+    </nav>
+
+    <div class="status">
+
+        <div class="status-dot"></div>
+
+        SYSTEM ACTIVE
+
+    </div>
+
+</header>
+
+
+<main>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section
+    id="dashboard"
+    class="page active">
+
+
+    <!-- ALERT -->
+
+    <div
+        id="alert"
+        class="alert">
+
+<div class="card" style="margin-bottom:20px;">
+
+    <div class="section-title">
+        REGIONAL RISK OVERVIEW
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        gap:12px;
+        margin-top:15px;
+    ">
+
+        <div class="metric">
+            <div class="metric-label">TOTAL REGIONS</div>
+            <div id="totalRegions" class="metric-value">15</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">CRITICAL</div>
+            <div id="criticalRegions" class="metric-value">0</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">HIGH RISK</div>
+            <div id="highRegions" class="metric-value">0</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">MODERATE</div>
+            <div id="moderateRegions" class="metric-value">0</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">LOW</div>
+            <div id="lowRegions" class="metric-value">0</div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+
+    <div class="section-title">
+        LIVE ALERT STATUS
+    </div>
+
+    <div
+        id="liveAlertStatus"
+        style="
+            margin-top:15px;
+            padding:16px;
+            border-radius:8px;
+            background:#fff4e5;
+            border:1px solid #f0b429;
+            font-weight:700;
+            color:#8a5a00;
+        ">
+        MONITORING — NO ACTIVE EMERGENCY
+    </div>
+
+</div>
+
+        <div class="alert-top">
+
+            <div
+                id="alertIcon"
+                class="alert-icon">
+                ⚠️
+            </div>
+
+            <div class="alert-content">
+
+                <div
+                    id="alertLabel"
+                    class="alert-label">
+                    EARLY WARNING ACTIVE
+                </div>
+
+                <h2 id="alertTitle">
+                    High flood risk detected
+                </h2>
+
+                <div
+                    id="alertLocation"
+                    class="alert-location">
+                    —
+                </div>
+
+                <div class="alert-stats">
+
+                    <div>
+
+                        <span>RISK SCORE</span>
+
+                        <strong id="alertScore">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>WARNING WINDOW</span>
+
+                        <strong id="alertWindow">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="alertReason"
+                    class="alert-reason">
+                    —
+                </div>
+
+                <div class="alert-action">
+
+                    <div class="alert-action-title">
+                        RECOMMENDED ACTION
+                    </div>
+
+                    <p id="alertAction">
+                        —
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+                id="sound"
+                class="sound">
+                🔊 ALERT
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- HERO -->
+
+    <div class="hero">
+
+        <div class="card hero-card">
+
+            <div>
+
+                <div class="small-label">
+                    CURRENT REGIONAL RISK
+                </div>
+
+                <div
+                    id="location"
+                    class="location">
+                    Wayanad, Kerala
+                </div>
+
+                <div class="risk-row">
+
+                    <div
+                        id="riskLevel"
+                        class="risk-level">
+                        —
+                    </div>
+
+                    <div>
+
+                        <div
+                            id="riskScore"
+                            class="risk-score">
+                            —
+                            <span>/100</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="riskDescription"
+                    class="risk-description">
+                    Select a location to run
+                    the FlashFlood AI assessment.
+                </div>
+
+            </div>
+
+            <div class="warning">
+
+                <span>
+                    ESTIMATED WARNING WINDOW
+                </span>
+
+                <strong id="warningWindow">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="small-label">
+                AI RISK ASSESSMENT
+            </div>
+
+            <select id="locationSelect">
+
+                <option value="wayanad">
+                    Wayanad, Kerala
+                </option>
+
+                <option value="munnar">
+                    Munnar, Kerala
+                </option>
+
+                <option value="darjeeling">
+                    Darjeeling, West Bengal
+                </option>
+
+                <option value="gangtok">
+                    Gangtok, Sikkim
+                </option>
+
+                <option value="shimla">
+                    Shimla, Himachal Pradesh
+                </option>
+
+                <option value="kullu">
+                    Kullu, Himachal Pradesh
+                </option>
+
+                <option value="manali">
+                    Manali, Himachal Pradesh
+                </option>
+
+                <option value="mussoorie">
+                    Mussoorie, Uttarakhand
+                </option>
+
+                <option value="dehradun">
+                    Dehradun, Uttarakhand
+                </option>
+
+                <option value="guwahati">
+                    Guwahati, Assam
+                </option>
+
+                <option value="ooty">
+                    Ooty, Tamil Nadu
+                </option>
+
+                <option value="itanagar">
+                    Itanagar, Arunachal Pradesh
+                </option>
+
+                <option value="kohima">
+                    Kohima, Nagaland
+                </option>
+
+                <option value="aizawl">
+                    Aizawl, Mizoram
+                </option>
+
+                <option value="srinagar">
+                    Srinagar, Jammu & Kashmir
+                </option>
+
+            </select>
+
+
+            <button
+    class="analyze-btn"
+    onclick="runAnalysis()">
+
+
+    RUN AI ASSESSMENT
+
+</button>
+
+
+            <div
+                id="analysisStatus"
+                style="
+                    margin-top:12px;
+                    color:#718494;
+                    font-size:9px;
+                ">
+
+                AI model ready
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ENVIRONMENT -->
+
+    <div class="section-title">
+        ENVIRONMENTAL CONDITIONS
+    </div>
+
+    <div class="environment">
+
+        <div class="metric">
+
+            <div class="metric-label">
+                RAINFALL 1H
+            </div>
+
+            <div
+                id="rain1"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                mm
+            </span>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                RAINFALL 3H
+            </div>
+
+            <div
+                id="rain3"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                mm
+            </span>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                RAINFALL 24H
+            </div>
+
+            <div
+                id="rain24"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                mm
+            </span>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                SOIL MOISTURE
+            </div>
+
+            <div
+                id="soil"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                %
+            </span>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                SLOPE
+            </div>
+
+            <div
+                id="slope"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                degrees
+            </span>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                FORECAST RAIN
+            </div>
+
+            <div
+                id="forecast"
+                class="metric-value">
+                —
+            </div>
+
+            <span class="metric-unit">
+                mm
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- REASONS -->
+
+    <div class="two-column">
+
+        <div class="card">
+
+            <div class="section-title">
+                WHY IS THE RISK CHANGING?
+            </div>
+
+            <div
+                id="reasons"
+                class="reasons">
+
+                <div class="reason">
+                    AI assessment waiting...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                COMMUNITY SAFETY
+            </div>
+
+            <div class="reasons">
+
+                <div class="reason">
+                    👥 Residents: monitor warnings
+                    and prepare for possible evacuation.
+                </div>
+
+                <div class="reason">
+                    🚑 Emergency teams: prepare
+                    response resources as risk increases.
+                </div>
+
+                <div class="reason">
+                    📢 Authorities: verify conditions
+                    and issue official warnings.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MINI SATELLITE MAP -->
+
+    <div class="card">
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:15px;
+            ">
+
+            <div
+                class="section-title"
+                style="margin:0">
+
+                LIVE REGIONAL RISK MAP
+
+            </div>
+
+            <button
+                onclick="showPage('map')"
+                style="
+                    background:none;
+                    border:none;
+                    color:#58c9b3;
+                    cursor:pointer;
+                    font-size:9px;
+                    font-weight:800;
+                ">
+
+                OPEN FULL MAP →
+
+            </button>
+
+        </div>
+
+        <div id="miniMap"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FULL RISK MAP
+===================================================== -->
+
+<section
+    id="map"
+    class="page">
+
+    <div class="card">
+
+        <div class="section-title">
+            REGIONAL FLOOD RISK MAP
+        </div>
+
+        <p
+            style="
+                color:#718494;
+                font-size:10px;
+                margin-bottom:18px;
+            ">
+
+            Real satellite imagery with actual
+            Indian locations. Marker colours represent
+            the prototype AI risk state.
+
+        </p>
+
+        <div id="riskMap"></div>
+
+        <div class="card" style="margin-top:20px;">
+
+            <div class="section-title">
+                AI FLOOD RISK ASSESSMENT
+            </div>
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:15px;
+                margin-top:15px;
+            ">
+
+                <div class="metric">
+                    <div class="metric-label">
+                        SELECTED REGION
+                    </div>
+
+                    <div
+                        id="mapSelectedLocation"
+                        class="metric-value"
+                        style="font-size:18px;">
+                        Select a marker
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">
+                        AI RISK SCORE
+                    </div>
+
+                    <div
+                        id="mapRiskScore"
+                        class="metric-value">
+                        —
+                    </div>
+
+                    <span class="metric-unit">
+                        /100
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">
+                        RISK LEVEL
+                    </div>
+
+                    <div
+                        id="mapRiskLevel"
+                        class="metric-value">
+                        READY
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<section
+    id="history"
+    class="page">
+
+    <div class="card">
+
+        <div class="section-title">
+            RISK HISTORY
+        </div>
+
+        <table class="history">
+
+            <thead>
+
+                <tr>
+
+                    <th>TIME</th>
+
+                    <th>LOCATION</th>
+
+                    <th>SCORE</th>
+
+                    <th>LEVEL</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="historyBody">
+
+                <tr>
+
+                    <td colspan="4">
+                        No assessments yet.
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SYSTEM
+===================================================== -->
+
+<section
+    id="system"
+    class="page">
+
+    <div class="card">
+
+        <div class="section-title">
+            FLASHFLOOD AI SYSTEM
+        </div>
+
+        <p
+            style="
+                color:#899aa8;
+                font-size:11px;
+                line-height:1.7;
+            ">
+
+            FlashFlood AI is a prototype
+            flash-flood risk assessment system
+            designed for hilly regions. It combines
+            environmental indicators with a local
+            machine-learning model to generate a
+            prototype risk score.
+
+        </p>
+
+
+        <div class="architecture">
+
+            <div class="arch-box">
+
+                <strong>
+                    ENVIRONMENTAL DATA
+                </strong>
+
+                <span>
+                    Rainfall, soil moisture,
+                    terrain and historical risk
+                </span>
+
+            </div>
+
+
+            <div class="arch-box">
+
+                <strong>
+                    AI MODEL
+                </strong>
+
+                <span>
+                    Random Forest
+                    risk prediction
+                </span>
+
+            </div>
+
+
+            <div class="arch-box">
+
+                <strong>
+                    RISK ENGINE
+                </strong>
+
+                <span>
+                    Risk score and
+                    warning classification
+                </span>
+
+            </div>
+
+
+            <div class="arch-box">
+
+                <strong>
+                    ALERT SYSTEM
+                </strong>
+
+                <span>
+                    Early warning and
+                    emergency response
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SYSTEM MONITORING STATUS -->
+
+    <div class="card" style="margin-top:20px;">
+
+        <div class="section-title">
+            SYSTEM MONITORING STATUS
+        </div>
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:15px;
+            margin-top:15px;
+        ">
+
+            <div class="metric">
+                <div class="metric-label">AI MODEL</div>
+                <div class="metric-value" style="font-size:18px;">
+                    ONLINE
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">BACKEND</div>
+
+                <div
+                    id="backendStatus"
+                    class="metric-value"
+                    style="font-size:18px;">
+                    CHECKING...
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">
+                    REGIONS MONITORED
+                </div>
+
+                <div
+                    class="metric-value"
+                    style="font-size:18px;">
+                    15
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">
+                    ALERT CHECK
+                </div>
+
+                <div
+                    class="metric-value"
+                    style="font-size:18px;">
+                    60 SEC
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<!-- LEAFLET -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+/* =====================================================
+   LOCATION DATA
+===================================================== */
+
+const locations = {
+
+    wayanad: {
+        name: "Wayanad, Kerala",
+        coords: [11.6854, 76.1320],
+        rainfall_1h: 60,
+        rainfall_3h: 130,
+        rainfall_24h: 170,
+        forecast_rainfall: 50,
+        soil_moisture: 75,
+        slope: 34,
+        elevation: 1400,
+        historical_risk: 65
+    },
+
+    munnar: {
+        name: "Munnar, Kerala",
+        coords: [10.0889, 77.0595],
+        rainfall_1h: 70,
+        rainfall_3h: 150,
+        rainfall_24h: 190,
+        forecast_rainfall: 60,
+        soil_moisture: 80,
+        slope: 36,
+        elevation: 1500,
+        historical_risk: 75
+    },
+
+    darjeeling: {
+        name: "Darjeeling, West Bengal",
+        coords: [27.0410, 88.2663],
+        rainfall_1h: 42,
+        rainfall_3h: 92,
+        rainfall_24h: 130,
+        forecast_rainfall: 38,
+        soil_moisture: 63,
+        slope: 30,
+        elevation: 1200,
+        historical_risk: 48
+    },
+
+    gangtok: {
+        name: "Gangtok, Sikkim",
+        coords: [27.3389, 88.6065],
+        rainfall_1h: 48,
+        rainfall_3h: 105,
+        rainfall_24h: 145,
+        forecast_rainfall: 45,
+        soil_moisture: 70,
+        slope: 34,
+        elevation: 1650,
+        historical_risk: 60
+    },
+
+    shimla: {
+        name: "Shimla, Himachal Pradesh",
+        coords: [31.1048, 77.1734],
+        rainfall_1h: 22,
+        rainfall_3h: 48,
+        rainfall_24h: 70,
+        forecast_rainfall: 18,
+        soil_moisture: 45,
+        slope: 20,
+        elevation: 900,
+        historical_risk: 25
+    },
+
+    kullu: {
+        name: "Kullu, Himachal Pradesh",
+        coords: [31.9579, 77.1095],
+        rainfall_1h: 35,
+        rainfall_3h: 75,
+        rainfall_24h: 105,
+        forecast_rainfall: 30,
+        soil_moisture: 58,
+        slope: 31,
+        elevation: 1220,
+        historical_risk: 45
+    },
+
+    manali: {
+        name: "Manali, Himachal Pradesh",
+        coords: [32.2432, 77.1892],
+        rainfall_1h: 38,
+        rainfall_3h: 82,
+        rainfall_24h: 115,
+        forecast_rainfall: 32,
+        soil_moisture: 60,
+        slope: 33,
+        elevation: 2050,
+        historical_risk: 48
+    },
+
+    mussoorie: {
+        name: "Mussoorie, Uttarakhand",
+        coords: [30.4598, 78.0644],
+        rainfall_1h: 40,
+        rainfall_3h: 90,
+        rainfall_24h: 125,
+        forecast_rainfall: 35,
+        soil_moisture: 65,
+        slope: 32,
+        elevation: 2005,
+        historical_risk: 52
+    },
+
+    dehradun: {
+        name: "Dehradun, Uttarakhand",
+        coords: [30.3165, 78.0322],
+        rainfall_1h: 30,
+        rainfall_3h: 68,
+        rainfall_24h: 100,
+        forecast_rainfall: 28,
+        soil_moisture: 55,
+        slope: 18,
+        elevation: 640,
+        historical_risk: 38
+    },
+
+    guwahati: {
+        name: "Guwahati, Assam",
+        coords: [26.1445, 91.7362],
+        rainfall_1h: 28,
+        rainfall_3h: 65,
+        rainfall_24h: 95,
+        forecast_rainfall: 25,
+        soil_moisture: 68,
+        slope: 12,
+        elevation: 55,
+        historical_risk: 40
+    },
+
+    ooty: {
+        name: "Ooty, Tamil Nadu",
+        coords: [11.4064, 76.6932],
+        rainfall_1h: 15,
+        rainfall_3h: 32,
+        rainfall_24h: 50,
+        forecast_rainfall: 12,
+        soil_moisture: 35,
+        slope: 15,
+        elevation: 800,
+        historical_risk: 20
+    },
+
+    itanagar: {
+        name: "Itanagar, Arunachal Pradesh",
+        coords: [27.0844, 93.6053],
+        rainfall_1h: 45,
+        rainfall_3h: 100,
+        rainfall_24h: 140,
+        forecast_rainfall: 42,
+        soil_moisture: 72,
+        slope: 29,
+        elevation: 350,
+        historical_risk: 55
+    },
+
+    kohima: {
+        name: "Kohima, Nagaland",
+        coords: [25.6751, 94.1086],
+        rainfall_1h: 44,
+        rainfall_3h: 95,
+        rainfall_24h: 135,
+        forecast_rainfall: 40,
+        soil_moisture: 70,
+        slope: 31,
+        elevation: 1261,
+        historical_risk: 54
+    },
+
+    aizawl: {
+        name: "Aizawl, Mizoram",
+        coords: [23.7271, 92.7176],
+        rainfall_1h: 50,
+        rainfall_3h: 110,
+        rainfall_24h: 150,
+        forecast_rainfall: 45,
+        soil_moisture: 76,
+        slope: 38,
+        elevation: 1132,
+        historical_risk: 62
+    },
+
+    srinagar: {
+        name: "Srinagar, Jammu & Kashmir",
+        coords: [34.0837, 74.7973],
+        rainfall_1h: 18,
+        rainfall_3h: 42,
+        rainfall_24h: 65,
+        forecast_rainfall: 15,
+        soil_moisture: 40,
+        slope: 16,
+        elevation: 1585,
+        historical_risk: 25
+    }
+
+};
+
+
+/* =====================================================
+   MAP VARIABLES
+===================================================== */
+
+let miniMap;
+let riskMap;
+
+let markers = {};
+
+
+/* =====================================================
+   RISK COLOR
+===================================================== */
+
+function riskColor(level) {
+
+    level = String(level).toUpperCase();
+
+    if (level === "CRITICAL")
+        return "#ff1744";
+
+    if (level === "HIGH")
+        return "#ff6d00";
+
+    if (level === "MODERATE")
+        return "#ffd600";
+
+    return "#00e676";
+
+}
+
+
+/* =====================================================
+   MARKER ICON
+===================================================== */
+
+function riskIcon(level) {
+
+    return L.divIcon({
+
+        className: "",
+
+        html: `
+            <div style="
+                width:18px;
+                height:18px;
+                border-radius:50%;
+                background:${riskColor(level)};
+                border:3px solid white;
+                box-shadow:0 0 14px ${riskColor(level)};
+            "></div>
+        `,
+
+        iconSize: [18,18],
+
+        iconAnchor: [9,9]
+
+    });
+
+}
+
+
+/* =====================================================
+   CREATE SATELLITE MAP
+===================================================== */
+
+function createSatelliteMap(id) {
+
+    const map = L.map(id);
+
+    L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            maxZoom: 19,
+            attribution: "Tiles © Esri"
+        }
+    ).addTo(map);
+
+
+    L.tileLayer(
+        "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+        {
+            maxZoom: 19,
+            opacity: 0.9,
+            attribution: "Labels © Esri"
+        }
+    ).addTo(map);
+
+
+    map.setView(
+        [22.5, 80],
+        5
+    );
+
+
+    return map;
+
+}
+
+
+/* =====================================================
+   INITIALIZE MAP
+===================================================== */
+
+function initializeMaps() {
+
+    miniMap =
+        createSatelliteMap(
+            "miniMap"
+        );
+
+    riskMap =
+        createSatelliteMap(
+            "riskMap"
+        );
+
+
+    Object.keys(locations)
+        .forEach(function(key) {
+
+            const data =
+                locations[key];
+
+
+            let level =
+                "LOW";
+
+
+            if (
+                data.historical_risk > 75
+            ) {
+
+                level =
+                    "CRITICAL";
+
+            }
+
+            else if (
+                data.historical_risk > 55
+            ) {
+
+                level =
+                    "HIGH";
+
+            }
+
+            else if (
+                data.historical_risk > 35
+            ) {
+
+                level =
+                    "MODERATE";
+
+            }
+
+
+            const marker =
+                L.marker(
+                    data.coords,
+                    {
+                        icon:
+                            riskIcon(level)
+                    }
+                )
+                .addTo(riskMap);
+
+
+            marker.bindPopup(`
+
+                <div style="
+                    min-width:220px;
+                    font-family:Arial;
+                    color:#111;
+                ">
+
+                    <h3>
+                        ${data.name}
+                    </h3>
+
+                    <p>
+                        <b>Elevation:</b>
+                        ${data.elevation} m
+                    </p>
+
+                    <p>
+                        <b>Slope:</b>
+                        ${data.slope}°
+                    </p>
+
+                    <p>
+                        <b>24h Rainfall:</b>
+                        ${data.rainfall_24h} mm
+                    </p>
+
+                    <p>
+                        <b>Soil Moisture:</b>
+                        ${data.soil_moisture}%
+                    </p>
+
+                    <p>
+                        <b>Prototype Risk:</b>
+                        ${level}
+                    </p>
+
+                    <button
+                        onclick="
+                            selectMapLocation('${key}')
+                        "
+                        style="
+                            padding:7px 12px;
+                            border:none;
+                            border-radius:6px;
+                            cursor:pointer;
+                        ">
+
+                        RUN AI ASSESSMENT
+
+                    </button>
+
+                </div>
+
+            `);
+
+
+            markers[key] =
+                marker;
+
+
+            const miniMarker =
+                L.marker(
+                    data.coords,
+                    {
+                        icon:
+                            riskIcon(level)
+                    }
+                )
+                .addTo(miniMap);
+
+
+            miniMarker.bindPopup(`
+                <b>${data.name}</b>
+                <br>
+                Click marker for AI assessment.
+            `);
+
+
+            miniMarker.on(
+                "click",
+                function() {
+
+                    selectMapLocation(key);
+
+                }
+            );
+
+
+        });
+
+
+    setTimeout(
+        function() {
+
+            miniMap.invalidateSize();
+
+            riskMap.invalidateSize();
+
+        },
+        500
+    );
+
+}
+
+
+/* =====================================================
+   SELECT MAP LOCATION
+===================================================== */
+
+function selectMapLocation(key) {
+
+    const data =
+        locations[key];
+
+
+    if (!data)
+        return;
+
+
+    document.getElementById(
+        "locationSelect"
+    ).value = key;
+
+
+    riskMap.flyTo(
+        data.coords,
+        12,
+        {
+            duration: 1.2
+        }
+    );
+
+
+    miniMap.flyTo(
+        data.coords,
+        10,
+        {
+            duration: 1.2
+        }
+    );
+
+
+    if (markers[key]) {
+
+        markers[key].openPopup();
+
+    }
+
+
+    runAnalysis(key);
+
+}
+
+
+/* =====================================================
+   UPDATE MARKER AFTER AI
+===================================================== */
+
+function updateMapMarker(
+    locationName,
+    level
+) {
+
+    const key =
+        Object.keys(locations)
+            .find(
+                k =>
+                    locations[k].name ===
+                    locationName
+            );
+
+
+    if (!key)
+        return;
+
+
+    if (markers[key]) {
+
+        markers[key].setIcon(
+            riskIcon(level)
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+function showPage(
+    pageId,
+    button
+) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            page => {
+
+                page.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    const page =
+        document.getElementById(
+            pageId
+        );
+
+
+    if (page) {
+
+        page.classList.add(
+            "active"
+        );
+
+    }
+
+
+    document
+        .querySelectorAll(
+            "nav button"
+        )
+        .forEach(
+            btn => {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    if (button) {
+
+        button.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if (pageId === "map") {
+
+        setTimeout(
+            function() {
+
+                riskMap.invalidateSize();
+
+            },
+            200
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RISK DESCRIPTION
+===================================================== */
+
+function riskDescription(level) {
+
+    if (level === "LOW") {
+
+        return "Current conditions are within the lower prototype-risk range. Continue monitoring.";
+
+    }
+
+    if (level === "MODERATE") {
+
+        return "Conditions are becoming elevated. Increase preparedness and monitoring.";
+
+    }
+
+    if (level === "HIGH") {
+
+        return "Multiple environmental indicators show elevated flood risk.";
+
+    }
+
+    return "Critical environmental conditions have been detected by the AI model.";
+
+}
+
+
+/* =====================================================
+   RISK REASONS
+===================================================== */
+
+function updateReasons(data) {
+
+    const reasons = [];
+
+
+    if (data.rainfall_1h >= 50) {
+
+        reasons.push(
+            "🌧️ Heavy rainfall detected"
+        );
+
+    }
+
+
+    if (data.rainfall_3h >= 100) {
+
+        reasons.push(
+            "💧 High short-term rainfall accumulation"
+        );
+
+    }
+
+
+    if (data.soil_moisture >= 70) {
+
+        reasons.push(
+            "🌱 High soil moisture"
+        );
+
+    }
+
+
+    if (data.slope >= 30) {
+
+        reasons.push(
+            "⛰️ Steep terrain increases runoff potential"
+        );
+
+    }
+
+
+    if (data.forecast_rainfall >= 40) {
+
+        reasons.push(
+            "🌧️ Additional forecast rainfall"
+        );
+
+    }
+
+
+    if (reasons.length === 0) {
+
+        reasons.push(
+            "✓ Environmental indicators remain relatively low"
+        );
+
+    }
+
+
+    document.getElementById(
+        "reasons"
+    ).innerHTML =
+
+        reasons
+            .map(
+                reason => `
+                    <div class="reason">
+                        ${reason}
+                    </div>
+                `
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   ALERT
+===================================================== */
+
+let previousLevel = null;
+
+
+function updateAlert(location, data, result)
+{
+
+    const level =
+        String(
+            result.risk_level
+        ).toUpperCase();
+
+
+    const alert =
+        document.getElementById(
+            "alert"
+        );
+
+
+    if (level === "LOW") {
+
+        alert.style.display =
+            "none";
+
+        previousLevel =
+            level;
+
+        return;
+
+    }
+
+
+    alert.style.display =
+        "block";
+
+
+    alert.className =
+        "alert " +
+        level.toLowerCase();
+
+
+    document.getElementById(
+        "alertLocation"
+    ).textContent =
+        location;
+
+
+    document.getElementById(
+        "alertScore"
+    ).textContent =
+        result.risk_score +
+        "/100";
+
+
+    document.getElementById(
+        "alertWindow"
+    ).textContent =
+        result.warning_time;
+
+
+    document.getElementById(
+        "alertReason"
+    ).textContent =
+        buildReason(data);
+
+
+    if (level === "MODERATE") {
+
+        document.getElementById(
+            "alertIcon"
+        ).textContent = "⚠️";
+
+        document.getElementById(
+            "alertLabel"
+        ).textContent =
+            "MONITORING ALERT";
+
+        document.getElementById(
+            "alertTitle"
+        ).textContent =
+            "Flood-risk conditions are increasing";
+
+        document.getElementById(
+            "alertAction"
+        ).textContent =
+            "Increase preparedness, continue monitoring local conditions, and follow official guidance.";
+
+        document.getElementById(
+            "sound"
+        ).textContent =
+            "🔊 ALERT READY";
+
+    }
+
+
+    if (level === "HIGH") {
+
+        document.getElementById(
+            "alertIcon"
+        ).textContent = "⚠️";
+
+        document.getElementById(
+            "alertLabel"
+        ).textContent =
+            "EARLY WARNING ACTIVE";
+
+        document.getElementById(
+            "alertTitle"
+        ).textContent =
+            "High flood risk detected";
+
+        document.getElementById(
+            "alertAction"
+        ).textContent =
+            "Prepare for possible evacuation and follow instructions from local authorities.";
+
+        document.getElementById(
+            "sound"
+        ).textContent =
+            "🔊 EARLY WARNING";
+
+    }
+
+
+    if (level === "CRITICAL") {
+
+        document.getElementById(
+            "alertIcon"
+        ).textContent = "🚨";
+
+        document.getElementById(
+            "alertLabel"
+        ).textContent =
+            "EMERGENCY WARNING ACTIVE";
+
+        document.getElementById(
+            "alertTitle"
+        ).textContent =
+            "Critical flood risk detected";
+
+        document.getElementById(
+            "alertAction"
+        ).textContent =
+            "Begin emergency response procedures and follow official evacuation instructions.";
+
+        document.getElementById(
+            "sound"
+        ).textContent =
+            "🔊 EMERGENCY WARNING";
+
+    }
+
+
+    previousLevel =
+        level;
+
+}
+
+
+/* =====================================================
+   REASON TEXT
+===================================================== */
+
+function buildReason(data) {
+
+    const reasons = [];
+
+
+    if (data.rainfall_1h >= 50)
+        reasons.push("heavy rainfall");
+
+
+    if (data.rainfall_3h >= 100)
+        reasons.push("high rainfall accumulation");
+
+
+    if (data.soil_moisture >= 70)
+        reasons.push("high soil moisture");
+
+
+    if (data.slope >= 30)
+        reasons.push("steep terrain");
+
+
+    if (data.forecast_rainfall >= 40)
+        reasons.push("additional forecast rainfall");
+
+
+    if (reasons.length === 0) {
+
+        return "Environmental indicators remain within the lower prototype-risk range.";
+
+    }
+
+
+    return (
+        "Key indicators: " +
+        reasons.join(" + ") +
+        "."
+    );
+
+}
+
+
+/* =====================================================
+   UPDATE DASHBOARD
+===================================================== */
+
+function updateDashboard(
+    location,
+    data,
+    result
+) {
+
+    document.getElementById(
+        "location"
+    ).textContent =
+        location;
+
+
+    document.getElementById(
+        "riskLevel"
+    ).textContent =
+        result.risk_level;
+
+
+    document.getElementById(
+        "riskScore"
+    ).innerHTML =
+        result.risk_score +
+        ' <span>/100</span>';
+
+
+    document.getElementById(
+        "riskDescription"
+    ).textContent =
+        riskDescription(
+            result.risk_level
+        );
+
+
+    document.getElementById(
+        "warningWindow"
+    ).textContent =
+        result.warning_time;
+
+
+    document.getElementById(
+        "rain1"
+    ).textContent =
+        data.rainfall_1h;
+
+
+    document.getElementById(
+        "rain3"
+    ).textContent =
+        data.rainfall_3h;
+
+
+    document.getElementById(
+        "rain24"
+    ).textContent =
+        data.rainfall_24h;
+
+
+    document.getElementById(
+        "soil"
+    ).textContent =
+        data.soil_moisture;
+
+
+    document.getElementById(
+        "slope"
+    ).textContent =
+        data.slope;
+
+
+    document.getElementById(
+        "forecast"
+    ).textContent =
+        data.forecast_rainfall;
+
+
+    updateReasons(data);
+
+
+    updateAlert(
+        location,
+        data,
+        result
+    );
+
+    playEmergencySound(
+        result.risk_level
+    );
+
+    updateMapMarker(
+        location,
+        result.risk_level
+    );
+
+    updateRiskOverview();
+
+    updateLiveAlertStatus(
+        location,
+        result
+    );
+
+    document.getElementById(
+        "mapSelectedLocation"
+    ).textContent =
+        location;
+
+    document.getElementById(
+        "mapRiskScore"
+    ).textContent =
+        result.risk_score;
+
+    document.getElementById(
+        "mapRiskLevel"
+    ).textContent =
+        result.risk_level;
+
+    saveHistory(
+        location,
+        result
+    );
+
+}
+
+
+async function updateRiskOverview() {
+
+    let critical = 0;
+    let high = 0;
+    let moderate = 0;
+    let low = 0;
+
+    for (const key of Object.keys(locations)) {
+
+        const data = locations[key];
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:5000/predict",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body:
+                            JSON.stringify(data)
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (result.risk_level === "CRITICAL") {
+
+                critical++;
+
+            } else if (
+                result.risk_level === "HIGH"
+            ) {
+
+                high++;
+
+            } else if (
+                result.risk_level === "MODERATE"
+            ) {
+
+                moderate++;
+
+            } else {
+
+                low++;
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Risk overview error:",
+                error
+            );
+
+        }
+    }
+
+    document.getElementById(
+        "totalRegions"
+    ).textContent =
+        Object.keys(locations).length;
+
+    document.getElementById(
+        "criticalRegions"
+    ).textContent =
+        critical;
+
+    document.getElementById(
+        "highRegions"
+    ).textContent =
+        high;
+
+    document.getElementById(
+        "moderateRegions"
+    ).textContent =
+        moderate;
+
+    document.getElementById(
+        "lowRegions"
+    ).textContent =
+        low;
+
+}
+
+
+function updateLiveAlertStatus(
+    location,
+    result
+) {
+
+    const alertBox =
+        document.getElementById(
+            "liveAlertStatus"
+        );
+
+    if (!alertBox)
+        return;
+
+
+    if (
+        result.risk_level ===
+        "CRITICAL"
+    ) {
+
+        alertBox.textContent =
+            "🚨 CRITICAL ALERT — " +
+            location +
+            " | Risk " +
+            result.risk_score +
+            "/100 | " +
+            result.action;
+
+        alertBox.style.background =
+            "#ffe5e5";
+
+        alertBox.style.borderColor =
+            "#d32f2f";
+
+        alertBox.style.color =
+            "#a40000";
+
+    }
+
+    else if (
+        result.risk_level ===
+        "HIGH"
+    ) {
+
+        alertBox.textContent =
+            "⚠ HIGH RISK — " +
+            location +
+            " | Risk " +
+            result.risk_score +
+            "/100 | " +
+            result.action;
+
+        alertBox.style.background =
+            "#fff0e0";
+
+        alertBox.style.borderColor =
+            "#e67e22";
+
+        alertBox.style.color =
+            "#9a4d00";
+
+    }
+
+    else if (
+        result.risk_level ===
+        "MODERATE"
+    ) {
+
+        alertBox.textContent =
+            "🟡 ELEVATED MONITORING — " +
+            location +
+            " | Risk " +
+            result.risk_score +
+            "/100";
+
+        alertBox.style.background =
+            "#fff8dc";
+
+        alertBox.style.borderColor =
+            "#d6b656";
+
+        alertBox.style.color =
+            "#7a6500";
+
+    }
+
+    else {
+
+        alertBox.textContent =
+            "🟢 MONITORING — " +
+            location +
+            " | Risk " +
+            result.risk_score +
+            "/100";
+
+        alertBox.style.background =
+            "#e8f7ee";
+
+        alertBox.style.borderColor =
+            "#49a078";
+
+        alertBox.style.color =
+            "#246b45";
+
+    }
+
+}
+
+
+/* =====================================================
+   RUN AI ANALYSIS
+===================================================== */
+
+async function runAnalysis(
+    locationKey = null
+) {
+
+    if (!locationKey) {
+
+        locationKey =
+            document.getElementById(
+                "locationSelect"
+            ).value;
+
+    }
+
+
+    const data =
+        locations[
+            locationKey
+        ];
+
+
+    if (!data)
+        return;
+
+
+    const status =
+        document.getElementById(
+            "analysisStatus"
+        );
+
+
+    /*
+       IMPORTANT:
+       Unlock browser audio immediately while
+       the Run AI button click is still active.
+       This prevents the browser from blocking
+       the siren after the fetch request.
+    */
+
+    unlockEmergencyAudio();
+
+
+    status.textContent =
+        "AI model analysing...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/predict",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(data)
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Backend unavailable"
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        updateDashboard(
+            data.name,
+            data,
+            result
+        );
+
+
+        status.textContent =
+            "AI assessment completed";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        status.textContent =
+            "Backend connection failed";
+
+
+        document.getElementById(
+            "riskDescription"
+        ).textContent =
+            "Start the Flask backend and try again.";
+
+    }
+
+}
+
+
+/* =====================================================
+   HISTORY
+===================================================== */
+
+let historyData = [];
+
+
+function saveHistory(
+    location,
+    result
+) {
+
+    historyData.unshift({
+
+        time:
+            new Date()
+                .toLocaleTimeString(),
+
+        location:
+            location,
+
+        score:
+            result.risk_score,
+
+        level:
+            result.risk_level
+
+    });
+
+
+    if (historyData.length > 10) {
+
+        historyData.pop();
+
+    }
+
+
+    renderHistory();
+
+}
+
+
+function renderHistory() {
+
+    const body =
+        document.getElementById(
+            "historyBody"
+        );
+
+
+    if (historyData.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    style="text-align:center;">
+                    No prediction history available
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    body.innerHTML =
+        historyData
+            .map(
+                item => {
+
+                    let badgeStyle =
+                        "";
+
+
+                    if (
+                        item.level ===
+                        "CRITICAL"
+                    ) {
+
+                        badgeStyle =
+                            "background:#ffe5e5;color:#a40000;";
+
+                    }
+
+                    else if (
+                        item.level ===
+                        "HIGH"
+                    ) {
+
+                        badgeStyle =
+                            "background:#fff0e0;color:#9a4d00;";
+
+                    }
+
+                    else if (
+                        item.level ===
+                        "MODERATE"
+                    ) {
+
+                        badgeStyle =
+                            "background:#fff8dc;color:#7a6500;";
+
+                    }
+
+                    else {
+
+                        badgeStyle =
+                            "background:#e8f7ee;color:#246b45;";
+
+                    }
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                ${item.time}
+                            </td>
+
+                            <td>
+                                ${item.location}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${item.score}/100
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                <span style="
+                                    display:inline-block;
+                                    padding:5px 10px;
+                                    border-radius:12px;
+                                    font-size:11px;
+                                    font-weight:700;
+                                    ${badgeStyle}
+                                ">
+
+                                    ${item.level}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   PAGE LOAD
+===================================================== */
+
+window.addEventListener(
+    "load",
+    function() {
+
+        initializeMaps();
+
+        runAnalysis(
+            "wayanad"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   BACKEND STATUS
+===================================================== */
+
+async function checkBackendStatus() {
+
+    const statusElement =
+        document.getElementById(
+            "backendStatus"
+        );
+
+    if (!statusElement)
+        return;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/health"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Backend offline"
+            );
+
+        }
+
+
+        statusElement.textContent =
+            "ONLINE";
+
+    }
+
+    catch (error) {
+
+        statusElement.textContent =
+            "OFFLINE";
+
+    }
+
+}
+
+
+checkBackendStatus();
+
+setInterval(
+    checkBackendStatus,
+    10000
+);
+
+
+/* =====================================================
+   EMERGENCY AUDIO
+===================================================== */
+
+let emergencyAudioUnlocked = false;
+
+
+function unlockEmergencyAudio() {
+
+    const audio =
+        document.getElementById("emergencyAudio");
+
+    if (!audio) {
+        return;
+    }
+
+    audio.volume = 1.0;
+    audio.loop = false;
+    audio.muted = true;
+    audio.currentTime = 0;
+
+    audio.play()
+        .then(function() {
+
+            emergencyAudioUnlocked = true;
+
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+
+        })
+        .catch(function(error) {
+
+            console.log(
+                "Audio unlock blocked:",
+                error
+            );
+
+        });
+}
+
+function playEmergencySound(level) {
+
+    level = String(level).toUpperCase();
+
+    const audio =
+        document.getElementById("emergencyAudio");
+
+    if (!audio) {
+        console.error(
+            "Emergency audio element not found!"
+        );
+        return;
+    }
+
+    if (
+        level !== "HIGH" &&
+        level !== "CRITICAL"
+    ) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = true;
+        return;
+    }
+
+    audio.loop = false;
+    audio.volume = 1.0;
+    audio.muted = false;
+    audio.currentTime = 0;
+
+    audio.play()
+        .then(() => {
+            console.log(
+                "🚨 Emergency siren playing once"
+            );
+        })
+        .catch((error) => {
+            console.error(
+                "Siren playback failed:",
+                error
+            );
+        });
+
+    audio.onended = function() {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = true;
+    };
+}
+
+</script>
+
+
+<audio
+    id="emergencyAudio"
+    src="alerts/emergency_warning.wav"
+    preload="auto">
+</audio>
+
+
+</body>
+
+</html>
