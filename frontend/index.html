@@ -2451,7 +2451,7 @@ async function updateRiskOverview() {
 
             const response =
                 await fetch(
-                    "http:///predict",
+                    "/predict",
                     {
                         method: "POST",
                         headers: {
@@ -2687,7 +2687,7 @@ async function runAnalysis(
 
         const response =
             await fetch(
-                "http:///predict",
+                "/predict",
                 {
 
                     method: "POST",
@@ -2945,7 +2945,7 @@ async function checkBackendStatus() {
 
         const response =
             await fetch(
-                "http://127.0.0.1:5000/health"
+                "/health"
             );
 
 
